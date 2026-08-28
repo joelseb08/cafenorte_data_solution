@@ -1,7 +1,11 @@
 cells:
   - kind: 1
     languageId: markdown
-    value: "# Creación de base de datos"
+    value: >-
+      # Creación de la estructura de la base de datos
+
+      Esta es la estructura principal de toda la base de datos, el cual puede
+      ser orquestada en un script simple que ejecute cada query.
     metadata: {}
   - kind: 2
     languageId: sql
@@ -13,7 +17,7 @@ cells:
     metadata: {}
   - kind: 2
     languageId: sql
-    value: CREATE USER usr_cafenorte WITH PASSWORD 'CafeNorte2026-08' SUPERUSER;
+    value: CREATE USER usr_cafenorte_example WITH PASSWORD 'example1234' SUPERUSER;
     metadata: {}
   - kind: 1
     languageId: markdown
@@ -25,15 +29,6 @@ cells:
       CREATE SCHEMA IF NOT EXISTS inventory;
 
       SET search_path TO inventory;
-
-
-      DROP TABLE IF EXISTS sku_mappings CASCADE;
-
-      DROP TABLE IF EXISTS tiendas_info CASCADE;
-
-      DROP TABLE IF EXISTS catalogo_productos CASCADE;
-
-      DROP TABLE IF EXISTS catalogo_proveedores CASCADE;
 
 
       CREATE TABLE IF NOT EXISTS sku_mappings (
@@ -82,8 +77,6 @@ cells:
 
       SET search_path TO exchange_rates;
 
-
-      DROP TABLE IF EXISTS currencies CASCADE;
 
       CREATE TABLE IF NOT EXISTS currencies (
           id SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
