@@ -1,0 +1,156 @@
+cells:
+  - kind: 1
+    languageId: markdown
+    value: "# Creación de base de datos"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: CREATE DATABASE cafenorte;
+    metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: "# Creación de usuario general"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: CREATE USER usr_cafenorte WITH PASSWORD 'CafeNorte2026-08' SUPERUSER;
+    metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: "# Creación de tablas para inventario"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: >+
+      CREATE SCHEMA IF NOT EXISTS inventory;
+
+      SET search_path TO inventory;
+
+
+      DROP TABLE IF EXISTS sku_mappings CASCADE;
+
+      DROP TABLE IF EXISTS tiendas_info CASCADE;
+
+      DROP TABLE IF EXISTS catalogo_productos CASCADE;
+
+      DROP TABLE IF EXISTS catalogo_proveedores CASCADE;
+
+
+      CREATE TABLE IF NOT EXISTS sku_mappings (
+          id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+          sku_pos VARCHAR(8) NOT NULL,
+          sku_erp VARCHAR(18) NOT NULL,
+          handle VARCHAR(70) DEFAULT NULL
+      );
+
+
+      CREATE TABLE IF NOT EXISTS tiendas_info (
+          id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+          tienda_id VARCHAR(5) NOT NULL,
+          ciudad VARCHAR(100) NOT NULL,
+          region VARCHAR(25) NOT NULL,
+          timezone VARCHAR(70) DEFAULT NULL
+      );
+
+
+      CREATE TABLE IF NOT EXISTS catalogo_productos (
+          id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+          id_sku_mapping INT NOT NULL REFERENCES sku_mappings(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+          nombre VARCHAR(100) NOT NULL,
+          categoria VARCHAR(100) NOT NULL
+      );
+
+
+      CREATE TABLE IF NOT EXISTS catalogo_proveedores (
+          id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+          id_sku_mapping INT NOT NULL REFERENCES sku_mappings(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+          fecha_vigencia DATE NOT NULL,
+          costo_mxn DECIMAL(10, 2) NOT NULL,
+          proveedor VARCHAR(100) NOT NULL
+      );
+
+
+    metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: "# Creación de tablas para tipo de cambio"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: >-
+      CREATE SCHEMA IF NOT EXISTS exchange_rates;
+
+      SET search_path TO exchange_rates;
+
+
+      DROP TABLE IF EXISTS currencies CASCADE;
+
+      CREATE TABLE IF NOT EXISTS currencies (
+          id SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+          code CHAR(3) NOT NULL,
+          name VARCHAR(50) DEFAULT NULL
+      );
+
+
+      INSERT INTO currencies (code, name) VALUES
+
+      ('MXN', 'Peso mexicano'),
+
+      ('USD', 'Dólar estadounidense'),
+
+      ('EUR', 'Euro');
+
+
+      CREATE TABLE IF NOT EXISTS rates (
+          id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+          fecha DATE NOT NULL,
+          currency_id SMALLINT NOT NULL REFERENCES currencies(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+          rate_to_mxn DECIMAL(10, 4) NOT NULL
+      );
+    metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: "# Creación de tablas de hechos (ventas)"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: >-
+      CREATE SCHEMA IF NOT EXISTS sales;
+
+      SET search_path TO sales;
+
+
+      CREATE TABLE IF NOT EXISTS points_of_sale (
+          id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+          venta_id VARCHAR(10) NOT NULL,
+          fecha_hora TIMESTAMP NOT NULL,
+          tienda_id INT NOT NULL REFERENCES inventory.tiendas_info(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+          sku INT NOT NULL REFERENCES inventory.sku_mappings(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+          cantidad SMALLINT NOT NULL,
+          monto DECIMAL(10, 2) NOT NULL,
+          moneda SMALLINT NOT NULL REFERENCES exchange_rates.currencies(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+          tipo_comprobante CHAR(1) NOT NULL
+      );
+
+
+      CREATE TABLE IF NOT EXISTS ecommerce_sales (
+          id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+          order_id VARCHAR(15) NOT NULL,
+          fecha TIMESTAMP NOT NULL,
+          product_handle INT NOT NULL REFERENCES inventory.sku_mappings(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+          cantidad SMALLINT NOT NULL,
+          amount DECIMAL(10, 2) NOT NULL,
+          currency SMALLINT NOT NULL REFERENCES exchange_rates.currencies(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+          customer_name VARCHAR(120) NOT NULL,
+          customer_email VARCHAR(120) NOT NULL,
+          customer_rfc VARCHAR(13) DEFAULT NULL,
+          shipping_city VARCHAR(150) NOT NULL,
+          shipping_address VARCHAR(255) NOT NULL
+      );
+    metadata: {}
+metadata:
+  conn:
+    id: -F17sivVUTPutenxGG-5W
+    name: local-arch
+  database: cafenorte
+  schema: exchange_rates
