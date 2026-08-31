@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS currencies (
     name VARCHAR(50) DEFAULT NULL
 );
 
+TRUNCATE TABLE currencies RESTART IDENTITY CASCADE;
 INSERT INTO currencies (code, name) VALUES
 ('MXN', 'Peso mexicano'),
 ('USD', 'Dólar estadounidense'),

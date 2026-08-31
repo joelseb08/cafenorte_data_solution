@@ -7,12 +7,12 @@ from os import getenv
 import sys
 
 load_dotenv()
+user = getenv("USER_DB_CAFENORTE")
+passwd = getenv("PASSWD_DB_CAFENORTE")
+db = getenv("NAME_DB_CAFENORTE")
 
 def execute_init_queries() -> None:    
     path = Path("./queries").glob("[1-9]*?.sql")
-    user = getenv("USER_DB_CAFENORTE")
-    passwd = getenv("PASSWD_DB_CAFENORTE")
-    db = getenv("NAME_DB_CAFENORTE")
     
     with connect("postgresql", f"postgresql://{user}:{passwd}@localhost:5432/{db}", autocommit=True) as conn:
         cursor = conn.cursor()
@@ -93,7 +93,7 @@ def main():
     print(f"Procesando archivos en la ruta: {path}")
     
     data = all_data(path)
-    with connect("postgresql", "postgresql://usr_cafenorte:CafeNorte2026-08@localhost:5432/cafenorte", autocommit=True) as conn:
+    with connect("postgresql", f"postgresql://{user}:{passwd}@localhost:5432/{db}", autocommit=True) as conn:
         cursor = conn.cursor()
         for table, value in data.items():
             data: pl.DataFrame = value["data"]
