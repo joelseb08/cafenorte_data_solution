@@ -67,7 +67,7 @@ Para ejecutar utilidades o herramientas de base de datos/interfaz mediante la su
 ```bash
 uv tool run dbc init
 uv tool run dbc add postgresql
-uv tool run sync
+uv tool run dbc sync
 ```
 
 ---
