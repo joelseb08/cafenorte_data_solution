@@ -1,3 +1,7 @@
 .venv/
-*.docx
-propuesta_tecnica*
+.vscode/
+data/
+*docx
+*docx#
+*test*
+.env
