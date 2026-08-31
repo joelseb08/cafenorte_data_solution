@@ -23,7 +23,8 @@ El desarrollo de la solución se estructuró mediante una **interacción convers
 ## 3. Prompts Clave e Iteración (Basados en esta Sesión)
 
 ### **Prompt 1: Claves Sustitutas Enteras vs. Códigos Alfanuméricos**
-* **Prompt escrito:** 
+
+* **Prompt escrito:**
   > *"Estoy diseñando la base de datos en PostgreSQL para unificar 3 fuentes de diferentes archivos (CSV, Parquet, JSON), cuáles son las ventajas de utilizar claves sustitutas enteras (INT/BIGINT) como llaves primarias en la tabla de hechos en lugar de mantener códigos de negocio alfanuméricos?, como ejemplos 'T001' o 'STORE-001'"*
 * **Respuesta de la IA:** Explicación detallada de ventajas en eficiencia de almacenamiento, densidad en `shared_buffers`, velocidad en `JOINs`, B-Tree indexes, desacoplamiento de fuentes y compresión.
 * **Acción tomada y Justificación:** **ACEPTADO.** Se adoptó el diseño de esquema en estrella utilizando `BIGINT` para la tabla de hechos `fact_ventas` y dimensiones.
@@ -31,7 +32,8 @@ El desarrollo de la solución se estructuró mediante una **interacción convers
 ---
 
 ### **Prompt 2: Configuración de Restricciones para Proteger el Histórico**
-* **Prompt escrito:** 
+
+* **Prompt escrito:**
   > *"Cómo debo configurar las restricciones FOREIGN KEY utilizando ON DELETE RESTRICT y ON UPDATE CASCADE en PostgreSQL para asegurar que las modificaciones en los catálogos no alteren el histórico de alguna tabla de hechos?"*
 * **Respuesta de la IA:** DDL de ejemplo, explicación de cómo `ON DELETE RESTRICT` evita borrados accidentales de ventas y cómo `ON UPDATE CASCADE` mantiene consistencia si la PK sustituta cambia.
 * **Acción tomada y Justificación:** **ACEPTADO.** Se incorporó la sintaxis DDL explícita en las tablas del modelo relacional analítico.
@@ -39,7 +41,8 @@ El desarrollo de la solución se estructuró mediante una **interacción convers
 ---
 
 ### **Prompt 3: Lógica Incremental en Python y Polars (`TIENDA_AB`)**
-* **Prompt escrito:** 
+
+* **Prompt escrito:**
   > *"No tengo un sistema de captura intermedio y proceso los datos con Python y Polars, cómo diseño la lógica para realizar cargas incrementales de modo que si llega una clave de tienda no registrada antes (ejemplo 'TIENDA_AB'), el script consulte la base de datos, genere el ID correspondiente y actualice las tablas sin duplicar registros?"*
 * **Respuesta de la IA:** Código en Python/Polars utilizando `anti-join` para detectar códigos nuevos, `INSERT ... ON CONFLICT (codigo_negocio) DO NOTHING` con `psycopg`, y re-consulta para mapear los IDs a la tabla de hechos usando `adbc`.
 * **Acción tomada y Justificación:** **ACEPTADO.** Se definió como el estándar oficial de ingesta incremental del proyecto.
@@ -47,7 +50,8 @@ El desarrollo de la solución se estructuró mediante una **interacción convers
 ---
 
 ### **Prompt 4: Pregunta generales acerca de herramientas o funciones de python (polars) y PostgreSQL**
-* **Prompt escrito:** 
+
+* **Prompt escrito:**
   > *"Como puedo implementar extracciones de texto múltiples para casos donde haya o no números dinámicos en diferentes posiciones..."*
 * **Respuesta de la IA:** Códigos en Python/Polars utilizando como referencia documentación oficial y sugerencias de uso para diferentes casos.
 * **Acción tomada y Justificación:** **ACEPTADO.** Se tomaron en cuenta sugerencias por parte del usuario y modificaciones de los códigos escritos.
@@ -55,8 +59,9 @@ El desarrollo de la solución se estructuró mediante una **interacción convers
 ---
 
 ### **Prompt 5: Documentación del README y Gestor `uv`**
-* **Prompt escrito:** 
-  > *"Crea un README sencillo donde indique como usar el proyecto considerando el uso de uv y dbc para la base de datos..."*
+
+* **Prompt escrito:**
+  > *"Crea un README sencillo donde indique como usar el proyecto considerando el uso de uv y dbc para la base de datos que pueda editar, como una plantilla..."*
 * **Respuesta de la IA:** Generación del archivo `README.md` estructurado con instrucciones de instalación de `uv`, sincronización (`uv sync`), dependencias de `pyproject.toml` y comandos `uv tool run dbc` y `uv run demo`.
 * **Acción tomada y Justificación:** **ACEPTADO E IMPLEMENTADO.** Se ejecutó el script Python para escribir directamente el archivo `README.md` en el repositorio.
 
